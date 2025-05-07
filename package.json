@@ -1,0 +1,14 @@
+{
+  "name": "prompt-butler",
+  "version": "1.0.0",
+  "description": "A Chrome extension for managing AI prompts",
+  "scripts": {
+    "generate-icons": "node generate_icons.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3"
+  },
+  "devDependencies": {
+    "canvas": "^2.11.0"
+  }
+} 

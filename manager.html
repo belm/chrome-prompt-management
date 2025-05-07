@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Butler - AI Prompt Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="styles/manager.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 h-screen">
+    <div id="app" class="flex flex-col h-full">
+        <!-- Header -->
+        <header class="bg-white shadow-sm p-4 md:p-6">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-semibold text-gray-800">Prompt Butler</h1>
+                    <div id="syncStatus" class="ml-4 text-sm px-3 py-1 rounded-full bg-gray-100 sync-status synced">
+                        All changes synced
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="settings.html" class="text-blue-500 hover:text-blue-700 text-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        设置
+                    </a>
+                    <button id="addPromptBtn" class="bg-blue-500 text-white px-5 py-3 text-lg rounded-md hover:bg-blue-600 self-start md:self-auto">
+                        Add Prompt
+                    </button>
+                </div>
+            </div>
+            <!-- Search Bar -->
+            <div class="max-w-7xl mx-auto mt-4">
+                <input type="text" id="searchInput" placeholder="Search prompts..." 
+                    class="w-full px-4 py-3 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex overflow-hidden">
+            <!-- Tags Sidebar -->
+            <aside class="w-1/5 lg:w-1/6 bg-white border-r p-4 overflow-y-auto">
+                <h2 class="font-semibold text-gray-700 mb-2 text-lg">Tags</h2>
+                <ul id="tagsList" class="space-y-2">
+                    <!-- Tags will be dynamically inserted here -->
+                </ul>
+            </aside>
+
+            <!-- Prompts List -->
+            <section class="w-4/5 lg:w-5/6 p-4 overflow-y-auto">
+                <div id="promptsList" class="space-y-4 max-w-6xl mx-auto">
+                    <!-- Prompts will be dynamically inserted here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Prompt Modal -->
+    <div id="promptModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto mx-4">
+            <h2 id="modalTitle" class="text-2xl font-semibold mb-6">Add New Prompt</h2>
+            <form id="promptForm">
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 text-lg">Title</label>
+                    <input type="text" id="promptTitle" class="w-full px-4 py-3 text-lg border rounded-md">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 text-lg">Content</label>
+                    <textarea id="promptContent" rows="15" class="w-full px-4 py-3 text-lg border rounded-md"></textarea>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 mb-2 text-lg">Tags</label>
+                    <input type="text" id="promptTags" placeholder="Add tags (comma separated)" class="w-full px-4 py-3 text-lg border rounded-md">
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancelBtn" class="px-6 py-3 text-lg border rounded-md hover:bg-gray-100">Cancel</button>
+                    <button type="submit" class="px-6 py-3 text-lg bg-blue-500 text-white rounded-md hover:bg-blue-600">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 引入Supabase库 -->
+    <script src="js/lib/supabase.min.js"></script>
+    <script type="module" src="js/manager.js"></script>
+</body>
+</html> 

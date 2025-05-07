@@ -1,0 +1,70 @@
+/* 设置页面样式 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* 开关样式 */
+input[type="checkbox"].sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+input[type="checkbox"] + .dot {
+    transition: all 0.3s ease-in-out;
+}
+
+input[type="checkbox"]:checked + div + .dot {
+    transform: translateX(100%);
+    background-color: #3b82f6;
+}
+
+input[type="checkbox"]:checked + div {
+    background-color: #bfdbfe;
+}
+
+/* 表单元素样式 */
+input:focus, select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* 连接状态指示器 */
+.connection-success {
+    color: #10b981;
+}
+
+.connection-error {
+    color: #ef4444;
+}
+
+.connection-loading {
+    color: #9ca3af;
+}
+
+/* 云服务选项高度动画 */
+#cloudServiceOptions.show,
+#supabaseSettings.show {
+    opacity: 1;
+    height: auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* 按钮悬停效果 */
+button:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s;
+}
+
+button:active {
+    transform: translateY(0);
+} 

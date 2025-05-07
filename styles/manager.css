@@ -1,0 +1,307 @@
+/* Base styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Sync status styles */
+.sync-status {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 12px;
+    animation: pulse 2s infinite;
+    display: inline-flex;
+    align-items: center;
+}
+
+.sync-status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.sync-status.synced {
+    background-color: #d1fae5;
+    color: #065f46;
+    animation: none;
+}
+
+.sync-status.synced::before {
+    background-color: #10b981;
+}
+
+.sync-status.syncing {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.sync-status.syncing::before {
+    background-color: #0ea5e9;
+}
+
+.sync-status.failed {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    animation: none;
+}
+
+.sync-status.failed::before {
+    background-color: #ef4444;
+}
+
+.sync-status.offline {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    animation: none;
+}
+
+.sync-status.offline::before {
+    background-color: #9ca3af;
+}
+
+.sync-status.disabled {
+    background-color: #ede9fe;
+    color: #5b21b6;
+    animation: none;
+}
+
+.sync-status.disabled::before {
+    background-color: #8b5cf6;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Tag styles */
+.tag {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 3px;
+    border-radius: 12px;
+    font-size: 14px;
+    background-color: #e5e7eb;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tag:hover {
+    background-color: #d1d5db;
+}
+
+.tag.active {
+    background-color: #93c5fd;
+    color: #1e40af;
+}
+
+/* Prompt card styles */
+.prompt-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background-color: white;
+    transition: all 0.2s;
+    font-size: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.prompt-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.prompt-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.prompt-created-time {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.prompt-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.prompt-updated-time {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+    margin-right: 10px;
+}
+
+.prompt-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.prompt-card p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+    color: #4b5563;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+    white-space: pre-line;
+}
+
+/* Time info styles */
+/* .prompt-time-info {
+    margin-top: 10px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background-color: #f8fafc;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #64748b;
+    border-left: 3px solid #cbd5e1;
+}
+
+.prompt-time-info div {
+    margin: 3px 0;
+} */
+
+.prompt-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.prompt-card-actions button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.copy-btn {
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.copy-btn:hover {
+    background-color: #d1d5db;
+}
+
+.edit-btn {
+    background-color: #93c5fd;
+    color: #1e40af;
+}
+
+.edit-btn:hover {
+    background-color: #60a5fa;
+}
+
+.delete-btn {
+    background-color: #fecaca;
+    color: #b91c1c;
+}
+
+.delete-btn:hover {
+    background-color: #fca5a5;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 24px;
+    background-color: #10b981;
+    color: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animation for modal */
+.modal-enter {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-exit {
+    animation: fadeOut 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    main {
+        flex-direction: column;
+    }
+    
+    aside, section {
+        width: 100% !important;
+    }
+    
+    aside {
+        max-height: 200px;
+    }
+} 
