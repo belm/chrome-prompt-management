@@ -10,7 +10,8 @@ let state = {
     editingPromptId: null,
     isOnline: navigator.onLine,
     syncStatus: 'synced', // 'synced', 'syncing', 'failed', 'disabled'
-    cloudSyncEnabled: false
+    cloudSyncEnabled: false,
+    isSaving: false // 添加保存状态标志
 };
 
 // DOM Elements
@@ -356,6 +357,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function savePrompt(e) {
         e.preventDefault();
         
+        // 如果正在保存中，阻止重复保存
+        if (state.isSaving) {
+            return;
+        }
+        
         const title = elements.promptTitle.value.trim();
         const content = elements.promptContent.value.trim();
         const tags = elements.promptTags.value
@@ -367,6 +373,14 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Title and content are required');
             return;
         }
+        
+        // 设置保存状态，禁用保存按钮
+        state.isSaving = true;
+        const saveButton = elements.promptForm.querySelector('button[type="submit"]');
+        const originalText = saveButton.textContent;
+        saveButton.textContent = '保存中...';
+        saveButton.disabled = true;
+        saveButton.classList.add('opacity-50', 'cursor-not-allowed');
         
         try {
             let updatedPrompt;
@@ -457,6 +471,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error saving prompt:', error);
             showToast('Error saving prompt. Please try again.');
+        } finally {
+            // 无论成功还是失败，都恢复按钮状态
+            state.isSaving = false;
+            saveButton.textContent = originalText;
+            saveButton.disabled = false;
+            saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     }
 

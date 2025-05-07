@@ -4,7 +4,8 @@ let state = {
     tags: new Set(),
     activeTag: null,
     searchQuery: '',
-    editingPromptId: null
+    editingPromptId: null,
+    isSaving: false
 };
 
 // DOM Elements
@@ -187,6 +188,10 @@ function closePromptModal() {
 async function savePrompt(e) {
     e.preventDefault();
     
+    if (state.isSaving) {
+        return;
+    }
+    
     const title = elements.promptTitle.value.trim();
     const content = elements.promptContent.value.trim();
     const tags = elements.promptTags.value
@@ -199,44 +204,61 @@ async function savePrompt(e) {
         return;
     }
     
-    if (state.editingPromptId) {
-        // Update existing prompt
-        const index = state.prompts.findIndex(p => p.id === state.editingPromptId);
-        if (index !== -1) {
-            state.prompts[index] = {
-                ...state.prompts[index],
+    state.isSaving = true;
+    const saveButton = elements.promptForm.querySelector('button[type="submit"]');
+    const originalText = saveButton.textContent;
+    saveButton.textContent = '保存中...';
+    saveButton.disabled = true;
+    saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+    
+    try {
+        if (state.editingPromptId) {
+            // Update existing prompt
+            const index = state.prompts.findIndex(p => p.id === state.editingPromptId);
+            if (index !== -1) {
+                state.prompts[index] = {
+                    ...state.prompts[index],
+                    title,
+                    content,
+                    tags,
+                    updatedAt: new Date().toISOString()
+                };
+            }
+        } else {
+            // Add new prompt
+            const newPrompt = {
+                id: Date.now().toString(),
                 title,
                 content,
                 tags,
+                createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
+            state.prompts.unshift(newPrompt);
         }
-    } else {
-        // Add new prompt
-        const newPrompt = {
-            id: Date.now().toString(),
-            title,
-            content,
-            tags,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-        state.prompts.unshift(newPrompt);
-    }
-    
-    // Update tags set
-    state.tags = new Set();
-    state.prompts.forEach(prompt => {
-        prompt.tags.forEach(tag => {
-            state.tags.add(tag);
+        
+        // Update tags set
+        state.tags = new Set();
+        state.prompts.forEach(prompt => {
+            prompt.tags.forEach(tag => {
+                state.tags.add(tag);
+            });
         });
-    });
-    
-    await savePrompts();
-    closePromptModal();
-    renderTags();
-    renderPrompts();
-    showToast(state.editingPromptId ? 'Prompt updated successfully' : 'Prompt added successfully');
+        
+        await savePrompts();
+        closePromptModal();
+        renderTags();
+        renderPrompts();
+        showToast(state.editingPromptId ? 'Prompt updated successfully' : 'Prompt added successfully');
+    } catch (error) {
+        console.error('保存提示词失败:', error);
+        showToast('保存失败，请重试');
+    } finally {
+        state.isSaving = false;
+        saveButton.textContent = originalText;
+        saveButton.disabled = false;
+        saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
 }
 
 // Delete prompt
