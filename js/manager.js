@@ -189,17 +189,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Save prompts to storage
     async function savePrompts() {
         return new Promise((resolve) => {
-            chrome.storage.local.set({ prompts: state.prompts }, async () => {
-                // Also sync with Supabase if online and cloud sync is enabled
-                if (state.isOnline && state.cloudSyncEnabled) {
-                    try {
-                        await syncWithSupabase();
-                    } catch (error) {
-                        console.error('Failed to sync with Supabase:', error);
-                        // We'll try again later
-                    }
-                }
+            chrome.storage.local.set({ prompts: state.prompts }, () => {
+                // 本地保存完成后立即解析promise
                 resolve();
+                
+                // 将云同步移到后台异步执行，不阻塞UI
+                if (state.isOnline && state.cloudSyncEnabled) {
+                    setTimeout(async () => {
+                        try {
+                            await syncWithSupabase();
+                        } catch (error) {
+                            console.error('Failed to sync with Supabase:', error);
+                            showToast('云同步失败，将在稍后重试');
+                            // We'll try again later
+                        }
+                    }, 100);
+                }
             });
         });
     }
@@ -389,34 +394,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Update existing prompt
                 const index = state.prompts.findIndex(p => p.id === state.editingPromptId);
                 if (index !== -1) {
-                    // Prepare updated data
+                    // 准备更新数据
                     const promptData = {
                         title,
                         content,
                         tags
                     };
                     
+                    // 立即执行本地更新
+                    state.prompts[index] = {
+                        ...state.prompts[index],
+                        ...promptData,
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    // 如果启用了云同步，在后台执行
                     if (state.isOnline && state.cloudSyncEnabled) {
-                        try {
-                            // 如果云同步已启用并且在线，直接更新到Supabase
-                            updatedPrompt = await promptsApi.updatePrompt(state.editingPromptId, promptData);
-                            state.prompts[index] = updatedPrompt;
-                        } catch (error) {
-                            console.error('Failed to update prompt in cloud, saving locally:', error);
-                            // 如果云同步失败，回退到本地更新
-                            state.prompts[index] = {
-                                ...state.prompts[index],
-                                ...promptData,
-                                updatedAt: new Date().toISOString()
-                            };
-                        }
-                    } else {
-                        // If offline or cloud sync disabled, update locally
-                        state.prompts[index] = {
-                            ...state.prompts[index],
-                            ...promptData,
-                            updatedAt: new Date().toISOString()
-                        };
+                        // 不等待云同步完成，让它在后台运行
+                        setTimeout(async () => {
+                            try {
+                                updatedPrompt = await promptsApi.updatePrompt(state.editingPromptId, promptData);
+                                // 更新本地状态
+                                const currentIndex = state.prompts.findIndex(p => p.id === state.editingPromptId);
+                                if (currentIndex !== -1) {
+                                    state.prompts[currentIndex] = updatedPrompt;
+                                    // 保存更新后的提示词列表
+                                    chrome.storage.local.set({ prompts: state.prompts });
+                                }
+                            } catch (error) {
+                                console.error('Failed to update prompt in cloud:', error);
+                            }
+                        }, 100);
                     }
                 }
             } else {
@@ -427,31 +435,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     tags
                 };
                 
+                // 立即创建本地提示词
+                const newPrompt = {
+                    id: Date.now().toString(),
+                    ...promptData,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                state.prompts.unshift(newPrompt);
+                
+                // 如果启用了云同步，在后台执行
                 if (state.isOnline && state.cloudSyncEnabled) {
-                    try {
-                        // 如果云同步已启用并且在线，直接创建到Supabase
-                        const newPrompt = await promptsApi.createPrompt(promptData);
-                        state.prompts.unshift(newPrompt);
-                    } catch (error) {
-                        console.error('Failed to create prompt in cloud, saving locally:', error);
-                        // 如果云同步失败，回退到本地创建
-                        const newPrompt = {
-                            id: Date.now().toString(),
-                            ...promptData,
-                            createdAt: new Date().toISOString(),
-                            updatedAt: new Date().toISOString()
-                        };
-                        state.prompts.unshift(newPrompt);
-                    }
-                } else {
-                    // If offline or cloud sync disabled, create locally first
-                    const newPrompt = {
-                        id: Date.now().toString(),
-                        ...promptData,
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
-                    state.prompts.unshift(newPrompt);
+                    // 不等待云同步完成，让它在后台运行
+                    setTimeout(async () => {
+                        try {
+                            const cloudPrompt = await promptsApi.createPrompt(promptData);
+                            // 找到之前添加的本地提示词
+                            const localIndex = state.prompts.findIndex(p => p.id === newPrompt.id);
+                            if (localIndex !== -1) {
+                                // 用云端返回的ID替换本地ID
+                                state.prompts.splice(localIndex, 1);
+                                state.prompts.unshift(cloudPrompt);
+                                // 保存更新后的提示词列表
+                                chrome.storage.local.set({ prompts: state.prompts });
+                            }
+                        } catch (error) {
+                            console.error('Failed to create prompt in cloud:', error);
+                        }
+                    }, 100);
                 }
             }
             
@@ -463,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
             
+            // 本地保存
             await savePrompts();
             closePromptModal();
             renderTags();
