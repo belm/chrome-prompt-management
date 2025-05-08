@@ -13,8 +13,7 @@
   "permissions": [
     "storage",
     "contextMenus",
-    "notifications",
-    "tabs"
+    "notifications"
   ],
   "host_permissions": [
     "https://*.supabase.co/*"
