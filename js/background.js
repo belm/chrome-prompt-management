@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // Handle action button click (extension icon)
 chrome.action.onClicked.addListener(() => {
-    window.open('manager.html');
+    chrome.tabs.create({ url: 'manager.html' });
 });
 
 // Handle context menu clicks
